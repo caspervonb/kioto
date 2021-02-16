@@ -1,4 +1,5 @@
 use crate::sys;
+use std::ffi;
 use std::io;
 
 /// Builds a Runtime with custom configuration values.
@@ -15,7 +16,10 @@ use std::io;
 ///
 ///   // use runtime
 /// }
-pub struct Builder {}
+pub struct Builder {
+    title: String,
+    enable_video: bool,
+}
 
 impl Builder {
     /// Create a new builder.
@@ -30,7 +34,51 @@ impl Builder {
     /// }
     /// ```
     pub fn new() -> Builder {
-        Self {}
+        Self {
+            title: "".to_string(),
+            enable_video: false,
+        }
+    }
+
+    /// Sets the title of the runtime.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use kioto::runtime;
+    ///
+    /// fn main() {
+    ///     let mut runtime = runtime::Builder::new()
+    ///         .title("Hello, world!")
+    ///         .build()
+    ///         .unwrap();
+    /// }
+    /// ```
+    pub fn title<T>(&mut self, title: T) -> &mut Builder
+    where
+        T: Into<String>,
+    {
+        self.title = title.into();
+        self
+    }
+
+    /// Enable the video driver.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use kioto::runtime;
+    ///
+    /// fn main() {
+    ///     let mut runtime = runtime::Builder::new()
+    ///         .enable_video()
+    ///         .build()
+    ///         .unwrap();
+    /// }
+    /// ```
+    pub fn enable_video(&mut self) -> &mut Builder {
+        self.enable_video = true;
+        self
     }
 
     /// Build a new runtime
@@ -46,6 +94,21 @@ impl Builder {
     ///         .unwrap();
     /// }
     pub fn build(&mut self) -> io::Result<Runtime> {
+        if self.enable_video {
+            let title = ffi::CString::new(self.title.clone())?;
+            let is_ready = unsafe {
+                sys::init_video(0, 0, title.as_ptr());
+                sys::is_video_ready()
+            };
+
+            if !is_ready {
+                return Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    "Unable to initialize video driver",
+                ));
+            }
+        }
+
         Ok(Runtime { running: false })
     }
 }
@@ -109,7 +172,15 @@ impl Runtime {
         let mut result = callback(self);
 
         while self.running && result.is_ok() {
+            unsafe {
+                sys::begin_frame();
+            }
+
             result = callback(self);
+
+            unsafe {
+                sys::end_frame();
+            }
         }
 
         result
@@ -133,6 +204,16 @@ impl Runtime {
     /// ```
     pub fn shutdown(&mut self) {
         self.running = false;
+    }
+}
+
+impl Drop for Runtime {
+    fn drop(&mut self) {
+        unsafe {
+            if sys::is_video_ready() {
+                sys::close_video();
+            }
+        }
     }
 }
 
