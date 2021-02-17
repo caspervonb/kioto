@@ -38,3 +38,21 @@ extern "C" {
     #[link_name="EndDrawing"]
     pub fn end_frame();
 }
+
+#[link(name="raylib")]
+extern "C" {
+    #[link_name="IsKeyPressed"]
+    pub fn is_key_pressed(i32: c_int) -> bool;
+
+    #[link_name="IsKeyReleased"]
+    pub fn is_key_released(i32: c_int) -> bool;
+
+    #[link_name="IsKeyDown"]
+    pub fn is_key_down(i32: c_int) -> bool;
+
+    #[link_name="IsKeyUp"]
+    pub fn is_key_up(i32: c_int) -> bool;
+
+    #[link_name="GetKeyPressed"]
+    pub fn get_next_key() -> c_int;
+}
