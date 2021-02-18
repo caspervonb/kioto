@@ -120,7 +120,7 @@ pub enum KeyCode {
 ///
 /// keyboard::is_key_released(keyboard::KeyCode::Space);
 /// ```
-pub fn is_key_pressed(key_code : KeyCode) -> bool {
+pub fn is_key_pressed(key_code: KeyCode) -> bool {
     unsafe {
         return sys::is_key_pressed(key_code as i32);
     }
@@ -173,8 +173,7 @@ pub fn is_key_up(key_code: KeyCode) -> bool {
 
 ///
 ///
-pub struct KeyIter {
-}
+pub struct KeyIter {}
 
 impl Iterator for KeyIter {
     type Item = KeyCode;
@@ -203,6 +202,5 @@ impl Iterator for KeyIter {
 /// }
 /// ```
 pub fn key_iter() -> KeyIter {
-    KeyIter {
-    }
+    KeyIter {}
 }

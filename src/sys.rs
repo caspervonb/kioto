@@ -30,29 +30,29 @@ extern "C" {
     pub fn draw_text(text: *const c_char, x: c_int, y: c_int, size: c_int, color: Color);
 }
 
-#[link(name="raylib")]
+#[link(name = "raylib")]
 extern "C" {
-    #[link_name="BeginDrawing"]
+    #[link_name = "BeginDrawing"]
     pub fn begin_frame();
 
-    #[link_name="EndDrawing"]
+    #[link_name = "EndDrawing"]
     pub fn end_frame();
 }
 
-#[link(name="raylib")]
+#[link(name = "raylib")]
 extern "C" {
-    #[link_name="IsKeyPressed"]
+    #[link_name = "IsKeyPressed"]
     pub fn is_key_pressed(i32: c_int) -> bool;
 
-    #[link_name="IsKeyReleased"]
+    #[link_name = "IsKeyReleased"]
     pub fn is_key_released(i32: c_int) -> bool;
 
-    #[link_name="IsKeyDown"]
+    #[link_name = "IsKeyDown"]
     pub fn is_key_down(i32: c_int) -> bool;
 
-    #[link_name="IsKeyUp"]
+    #[link_name = "IsKeyUp"]
     pub fn is_key_up(i32: c_int) -> bool;
 
-    #[link_name="GetKeyPressed"]
+    #[link_name = "GetKeyPressed"]
     pub fn get_next_key() -> c_int;
 }
