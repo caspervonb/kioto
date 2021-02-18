@@ -23,6 +23,9 @@ extern "C" {
     #[link_name = "ClearBackground"]
     pub fn clear_background(color: Color);
 
+    #[link_name = "DrawLine"]
+    pub fn draw_line(x1: c_int, y1: c_int, x2: c_int, y2: c_int, color: Color);
+
     #[link_name = "DrawCircle"]
     pub fn draw_circle(x: c_int, y: c_int, radius: c_float, color: Color);
 

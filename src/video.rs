@@ -174,6 +174,21 @@ pub fn clear_background(color: Color) {
     }
 }
 
+/// Draw a line with the given color.
+///
+/// # Examples
+///
+/// ```no_run
+/// use kioto::video;
+///
+/// video::draw_line(0, 0, 100, 100, video::Color::WHITE);
+/// ```
+pub fn draw_line(x1: i32, y1: i32, x2: i32, y2: i32, color: Color) {
+    unsafe {
+        sys::draw_line(x1, y1, x2, y2, color);
+    }
+}
+
 /// Draw a circle filled with the given color.
 ///
 /// # Examples
