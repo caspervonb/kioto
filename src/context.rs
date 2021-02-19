@@ -26,7 +26,7 @@ impl Builder {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```no_run
     /// use kioto::context;
     ///
     /// fn main() {
@@ -85,7 +85,7 @@ impl Builder {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```no_run
     /// use kioto::context;
     ///
     /// fn main() {
@@ -138,7 +138,7 @@ impl Context {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```no_run
     /// use kioto::context;
     ///
     /// fn main() {
@@ -152,7 +152,7 @@ impl Context {
     /// Run the context loop with the given callback which is called once per tick until shutdown.
     ///
     /// # Examples
-    /// ```rust
+    /// ```no_run
     /// use kioto::context;
     ///
     /// fn main() {
@@ -190,7 +190,7 @@ impl Context {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```no_run
     /// use kioto::context;
     ///
     /// fn main() {
