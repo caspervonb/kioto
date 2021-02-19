@@ -2,19 +2,19 @@ use crate::sys;
 use std::ffi;
 use std::io;
 
-/// Builds a Runtime with custom configuration values.
+/// Builds a Context with custom configuration values.
 ///
 /// # Examples
 ///
 /// ```
-/// use kioto::runtime;
+/// use kioto::context;
 ///
 /// fn main() {
-///   let runtime = runtime::Builder::new()
+///   let context = context::Builder::new()
 ///     .build()
 ///     .unwrap();
 ///
-///   // use runtime
+///   // use context
 /// }
 pub struct Builder {
     title: String,
@@ -27,10 +27,10 @@ impl Builder {
     /// # Examples
     ///
     /// ```rust
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///     let builder = runtime::Builder::new();
+    ///     let builder = context::Builder::new();
     /// }
     /// ```
     pub fn new() -> Builder {
@@ -40,15 +40,15 @@ impl Builder {
         }
     }
 
-    /// Sets the title of the runtime.
+    /// Sets the title of the context.
     ///
     /// # Examples
     ///
     /// ```no_run
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///     let mut runtime = runtime::Builder::new()
+    ///     let mut context = context::Builder::new()
     ///         .title("Hello, world!")
     ///         .build()
     ///         .unwrap();
@@ -67,10 +67,10 @@ impl Builder {
     /// # Examples
     ///
     /// ```no_run
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///     let mut runtime = runtime::Builder::new()
+    ///     let mut context = context::Builder::new()
     ///         .enable_video()
     ///         .build()
     ///         .unwrap();
@@ -81,19 +81,19 @@ impl Builder {
         self
     }
 
-    /// Build a new runtime
+    /// Build a new context
     ///
     /// # Examples
     ///
     /// ```rust
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///     let runtime = runtime::Builder::new()
+    ///     let context = context::Builder::new()
     ///         .build()
     ///         .unwrap();
     /// }
-    pub fn build(&mut self) -> io::Result<Runtime> {
+    pub fn build(&mut self) -> io::Result<Context> {
         if self.enable_video {
             let title = ffi::CString::new(self.title.clone())?;
             let is_ready = unsafe {
@@ -109,56 +109,56 @@ impl Builder {
             }
         }
 
-        Ok(Runtime { running: false })
+        Ok(Context { running: false })
     }
 }
 
-/// A Runtime handles the application event loop and connects to the various device drivers.
+/// A Context handles the application event loop and connects to the various device drivers.
 ///
 /// # Examples
 ///
 /// ```
-/// use kioto::runtime;
+/// use kioto::context;
 ///
 /// fn main() {
-///     let mut runtime = runtime::Runtime::new();
-///     runtime.run_with(|runtime| {
-///       runtime.shutdown();
+///     let mut context = context::Context::new();
+///     context.run_with(|context| {
+///       context.shutdown();
 ///
 ///       Ok(())
 ///     });
 /// }
 /// ```
-pub struct Runtime {
+pub struct Context {
     running: bool,
 }
 
-impl Runtime {
-    /// Create a new runtime with the default configuration.
+impl Context {
+    /// Create a new context with the default configuration.
     ///
     /// # Examples
     ///
     /// ```rust
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///   let runtime = runtime::Runtime::new();
+    ///   let context = context::Context::new();
     /// }
     /// ```
     pub fn new() -> Self {
         Self { running: false }
     }
 
-    /// Run the runtime loop with the given callback which is called once per tick until shutdown.
+    /// Run the context loop with the given callback which is called once per tick until shutdown.
     ///
     /// # Examples
     /// ```rust
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///   let mut runtime = runtime::Runtime::new();
-    ///   runtime.run_with(|runtime| {
-    ///     runtime.shutdown();
+    ///   let mut context = context::Context::new();
+    ///   context.run_with(|context| {
+    ///     context.shutdown();
     ///
     ///     Ok(())
     ///   });
@@ -166,7 +166,7 @@ impl Runtime {
     /// ```
     pub fn run_with<F>(&mut self, callback: F) -> Result<(), io::Error>
     where
-        F: Fn(&mut Runtime) -> Result<(), io::Error>,
+        F: Fn(&mut Context) -> Result<(), io::Error>,
     {
         self.running = true;
         let mut result = callback(self);
@@ -191,12 +191,12 @@ impl Runtime {
     /// # Examples
     ///
     /// ```rust
-    /// use kioto::runtime;
+    /// use kioto::context;
     ///
     /// fn main() {
-    ///     let mut runtime = runtime::Runtime::new();
-    ///     runtime.run_with(|runtime| {
-    ///         runtime.shutdown();
+    ///     let mut context = context::Context::new();
+    ///     context.run_with(|context| {
+    ///         context.shutdown();
     ///
     ///         Ok(())
     ///     });
@@ -207,7 +207,7 @@ impl Runtime {
     }
 }
 
-impl Drop for Runtime {
+impl Drop for Context {
     fn drop(&mut self) {
         unsafe {
             if sys::is_video_ready() {
@@ -222,17 +222,17 @@ mod tests {
     use super::*;
 
     #[test]
-    pub fn build_runtime() {
-        let runtime = Builder::new().build();
+    pub fn build_context() {
+        let context = Builder::new().build();
 
-        assert!(runtime.is_ok());
+        assert!(context.is_ok());
     }
 
     #[test]
     pub fn run_with() {
-        let mut runtime = Runtime::new();
-        let result = runtime.run_with(|runtime| {
-            runtime.shutdown();
+        let mut context = Context::new();
+        let result = context.run_with(|context| {
+            context.shutdown();
 
             Ok(())
         });
