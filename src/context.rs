@@ -2,6 +2,16 @@ use crate::sys;
 use std::ffi;
 use std::io;
 
+/// A trait defining event callbacks.
+///
+pub trait Delegate {
+    ///
+    fn update(&mut self, context: &mut Context) {}
+
+    ///
+    fn render(&mut self, context: &mut Context) {}
+}
+
 /// Builds a Context with custom configuration values.
 ///
 /// # Examples
@@ -171,19 +181,28 @@ impl Context {
         self.running = true;
         let mut result = callback(self);
 
-        while self.running && result.is_ok() {
+        result
+    }
+
+    ///
+    ///
+    pub fn run<D>(&mut self, delegate: &mut D)
+    where
+        D: Delegate,
+    {
+        self.running = true;
+        while self.running {
             unsafe {
                 sys::begin_frame();
             }
 
-            result = callback(self);
+            delegate.update(self);
+            delegate.render(self);
 
             unsafe {
                 sys::end_frame();
             }
         }
-
-        result
     }
 
     /// Schedules the loop for termination after the next tick completes.
