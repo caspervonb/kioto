@@ -132,11 +132,6 @@ impl Builder {
 ///
 /// fn main() {
 ///     let mut context = context::Context::new();
-///     context.run_with(|context| {
-///       context.shutdown();
-///
-///       Ok(())
-///     });
 /// }
 /// ```
 pub struct Context {
@@ -157,31 +152,6 @@ impl Context {
     /// ```
     pub fn new() -> Self {
         Self { running: false }
-    }
-
-    /// Run the context loop with the given callback which is called once per tick until shutdown.
-    ///
-    /// # Examples
-    /// ```no_run
-    /// use kioto::context;
-    ///
-    /// fn main() {
-    ///   let mut context = context::Context::new();
-    ///   context.run_with(|context| {
-    ///     context.shutdown();
-    ///
-    ///     Ok(())
-    ///   });
-    /// }
-    /// ```
-    pub fn run_with<F>(&mut self, callback: F) -> Result<(), io::Error>
-    where
-        F: Fn(&mut Context) -> Result<(), io::Error>,
-    {
-        self.running = true;
-        let mut result = callback(self);
-
-        result
     }
 
     ///
@@ -207,20 +177,6 @@ impl Context {
 
     /// Schedules the loop for termination after the next tick completes.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use kioto::context;
-    ///
-    /// fn main() {
-    ///     let mut context = context::Context::new();
-    ///     context.run_with(|context| {
-    ///         context.shutdown();
-    ///
-    ///         Ok(())
-    ///     });
-    /// }
-    /// ```
     pub fn shutdown(&mut self) {
         self.running = false;
     }
@@ -245,17 +201,5 @@ mod tests {
         let context = Builder::new().build();
 
         assert!(context.is_ok());
-    }
-
-    #[test]
-    pub fn run_with() {
-        let mut context = Context::new();
-        let result = context.run_with(|context| {
-            context.shutdown();
-
-            Ok(())
-        });
-
-        assert!(result.is_ok());
     }
 }
