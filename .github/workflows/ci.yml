@@ -1,0 +1,30 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        rust-version: [stable, nightly]
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@master
+
+    - name: Setup rust
+      uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: ${{ matrix.rust-version }}
+
+    - name: Run tests
+      run: cargo test --verbose
